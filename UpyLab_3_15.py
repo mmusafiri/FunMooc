@@ -11,7 +11,7 @@ while 1:
     position_cible = int(input())
 
     if saut < 1 or saut > 99 or position_cible < 1 or position_cible > 99:
-        print("pas dans la plage 1-99")
+        print("pas_chateau dans la plage 1-99")
     else:
         break
 

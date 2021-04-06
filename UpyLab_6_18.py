@@ -121,7 +121,7 @@ def naked_single(grid):
         l_c = list(dic_c[n])
         for n in l_c:
             if n == 0:                                              # s'il reste un seul 0
-                return (False, None)                                # dans ce cas, pas de solution
+                return (False, None)                                # dans ce cas, pas_chateau de solution
     return(True,w_grille)                                           # sinon on renvoie la solution
 
 

@@ -45,7 +45,7 @@ def words_by_length(filename):
 ret = words_by_length("Zola.txt")
 ret_v = {1: ['a', 'c', 'd', 'l', 'n', 's', 'à'], 2: ['ce', 'de', 'du', 'en', 'et', 'il',
      'la', 'le', 'là', 'sa', 'se', 'si', 'un'],
- 3: ['aux', 'des', 'ils', 'les', 'par', 'pas',
+ 3: ['aux', 'des', 'ils', 'les', 'par', 'pas_chateau',
      'que', 'qui', 'ses', 'sol', 'une', 'vie'],
  4: ['avec', 'blés', 'ciel', 'dans', 'dont',
      'loin', 'plus', 'pour', 'sous', 'sève',
