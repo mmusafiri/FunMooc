@@ -1,15 +1,22 @@
+# DECLARATION IMPORTS
+
 from CONFIGS import *
 import turtle
 
-l_inv = []
-dic_o = {}
-dic_q = {}
-mat_chateau = []
-pos_joueur = ()
-pas_chateau = 0
-triche = False
-triche_index = 0
-triche_pos = ()
+# DECLARATION VARIABLES GLOBALES
+
+l_inv = []                                              # Liste d'objets trouvés
+dic_o = {}                                              # Dict objet du chateau
+dic_q = {}                                              # Dict question du chateau
+mat_chateau = []                                        # List matrice du chateau
+pos_joueur = ()                                         # position joueur
+pas_chateau = 0                                         # pas pour déplacement
+triche = False                                          # Indication de Triche
+triche_index = 0                                        # Index de Triche
+triche_pos = ()                                         # Position de Triche
+
+
+# FONCTIONS
 
 
 def lire_matrice(filename, sep=' '):
@@ -19,12 +26,12 @@ def lire_matrice(filename, sep=' '):
     :param sep: separateur
     :return: list(data_ligne)
     """
-    l_plan = []                                             # Initialisation liste vide
-    with open(filename, 'r', encoding='utf-8') as fm:       # Ouverture du fichier plan
-        for ligne in fm:                                    # On lit les lignes
-            l_donnees = ligne.strip().split(sep)            # On sépare les données
-            l_plan.append([int(x) for x in l_donnees])      # On ajoute dans la liste en format INT
-    return l_plan
+    l_plan = []                                         # Initialisation liste vide
+    with open(filename, 'r', encoding='utf-8') as fm:   # Ouverture du fichier plan
+        for ligne in fm:                                # lecture par ligne
+            l_donnees = ligne.strip().split(sep)        # Séparation des données en liste
+            l_plan.append([int(x) for x in l_donnees])  # Ajout dans la liste en format INT
+    return l_plan                                       # Renvoi de la liste
 
 
 def calcul_pas(matrix):
@@ -35,9 +42,9 @@ def calcul_pas(matrix):
     """
     pas_h = int(abs((ZONE_PLAN_MAXI[0] - ZONE_PLAN_MINI[0]) / len(matrix[0])))  # Calcul du pas en X
     pas_v = int(abs((ZONE_PLAN_MAXI[1] - ZONE_PLAN_MINI[1]) / len(matrix)))     # Calcul du pas en Y
-    if pas_h <= pas_v:                                                          # On renvoi le pas le plus petit
-        return pas_h
-    return pas_v
+    if pas_h <= pas_v:
+        return pas_h                                    # Renvoi du pas le plus petit
+    return pas_v                                        # Permettant de tenir dans la zone
 
 
 def coordonnees(case, step):
@@ -48,13 +55,13 @@ def coordonnees(case, step):
     :return: Tuple Coordonnées Turtle (X,Y) de la case
     """
 
-    nb_ligne = len(mat_chateau)             # Récuperation du nombre de lignes de la matrice pour calcul offset ordonnées
+    nb_ligne = len(mat_chateau)                         # Récuperation Nb de lignes matrice pour calcul offset ordonnées
 
-    offset_x = ZONE_PLAN_MINI[0]            # Récupération offset Turtle en X
-    offset_y = ZONE_PLAN_MINI[1]            # Récuperation offset Turtle en Y
+    offset_x = ZONE_PLAN_MINI[0]                        # Récupération offset Turtle en X
+    offset_y = ZONE_PLAN_MINI[1]                        # Récuperation offset Turtle en Y
 
-    coord_x = case[1] * step + offset_x     # Calcul de la Coordonnée abscisse Turtle
-    coord_y = (nb_ligne - case[0]) * step + offset_y  # Calcul de la Coordonnée ordonnée Turtle
+    coord_x = case[1] * step + offset_x                 # Calcul de la Coordonnée abscisse Turtle
+    coord_y = (nb_ligne - case[0]) * step + offset_y    # Calcul de la Coordonnée ordonnée Turtle
 
     return coord_x, coord_y
 
@@ -64,11 +71,11 @@ def tracer_carre(dimension):
     :param dimension: la largeur du carré en point pixel Turtle
     :return:
     """
-    turtle.pendown()  # On pose le stylo
-    for _ in range(4):  # Boucle de 4 Iterations
-        turtle.forward(dimension)  # On avance de 'dimension'
-        turtle.left(90)  # On fait 1/4 de tour à droite
-    turtle.penup()  # On releve le stylo
+    turtle.pendown()                                    # Descente du stylo
+    for _ in range(4):                                  # Boucle de 4 Iterations
+        turtle.forward(dimension)                       # Avancer
+        turtle.left(90)                                 # Rotation 90°
+    turtle.penup()                                      # Montée du stylo
 
 
 def tracer_case(case, couleur, step):
@@ -79,15 +86,14 @@ def tracer_case(case, couleur, step):
     :param step: pas_chateau (Sachant que pas_chateau est en global, on pourrait réécrire la fonction sans ce paramètre
     :return:
     """
-
-    turtle.penup()                                  # Montée de stylo
-    turtle.goto(coordonnees(case, step))            # Positionnement aux coordonnées Turtle de la case
-    turtle.pendown()                                # Descente du stylo
-    turtle.color(couleur)                           # Définition de la couleur de remplissage
-    turtle.begin_fill()                             # Début remplissage
-    tracer_carre(pas_chateau - 2)                   # On trace un carré aux dimensions voulu
-    turtle.end_fill()                               # Fin du remplissage
-    turtle.penup()                                  # Montée du stylo
+    turtle.penup()                                      # Montée de stylo
+    turtle.goto(coordonnees(case, step))                # Positionnement aux coordonnées Turtle de la case
+    turtle.pendown()                                    # Descente du stylo
+    turtle.color(couleur)                               # Définition de la couleur de remplissage
+    turtle.begin_fill()                                 # Début remplissage
+    tracer_carre(pas_chateau - 2)                       # Tracage du carré
+    turtle.end_fill()                                   # Fin du remplissage
+    turtle.penup()                                      # Montée du stylo
 
 
 def aff_joueur(case, efface=False):
@@ -97,16 +103,16 @@ def aff_joueur(case, efface=False):
     :param efface: Boolean True = On 'efface' en redessinant le joueur avec la couleur de fond de la case
     :return:
     """
-    turtle.penup()                                                      # Montée du stylo
-    centre_joueur = tuple(ti + ((pas_chateau - 2) / 2) for ti in coordonnees(case, pas_chateau)) #on calcul la coord
-    turtle.goto(centre_joueur)                                          # Positionnement aux coordonnées
-    turtle.pendown()                                                    # Descente du stylo
-    if efface:                                                          # si c'est un effacement
-        coul = COULEURS[mat_chateau[case[0]][case[1]]]                  # Récupération de la couleur de la case
-    else:                                                               # Sinon
-        coul = COULEUR_PERSONNAGE                                       # Initialisation couleur personnage
-    turtle.dot(int(RATIO_PERSONNAGE * (pas_chateau - 1)), coul)         # On fait le rond du personnage avec le ratio
-    turtle.penup()                                                      # Montée du Stylo
+    turtle.penup()                                      # Montée du stylo
+    centre_joueur = tuple(ti + ((pas_chateau - 2) / 2) for ti in coordonnees(case, pas_chateau))  # Calcul coord
+    turtle.goto(centre_joueur)                          # Positionnement aux coordonnées
+    turtle.pendown()                                    # Descente du stylo
+    if efface:                                          # Vérification si effacement
+        coul = COULEURS[mat_chateau[case[0]][case[1]]]  # Récupération de la couleur de la case
+    else:                                               # Sinon
+        coul = COULEUR_PERSONNAGE                       # Initialisation couleur personnage
+    turtle.dot(int(RATIO_PERSONNAGE * (pas_chateau - 1)), coul)  # On fait le rond du personnage avec le ratio
+    turtle.penup()                                      # Montée du Stylo
 
 
 def aff_plan(mat):
@@ -116,34 +122,33 @@ def aff_plan(mat):
     :param mat: Liste "matricielle" par ligne du Labyrinthe
     :return:
     """
-
-    turtle.hideturtle()                                     # On cache le Curseur Turtle
-
-    for Cx, l in enumerate(mat):                            # Boucle sur les lignes du labyrinthe
-        for Cy, c in enumerate(l):                          # Boucle sur les colonnes du labyrinthe
-            turtle.speed(0)                                 # Initialisation vitesse de traçage à fond
-            if c != 0:                                 # On ne trace pas les cases couloir (même couleur que le fond)
+    for Cx, l in enumerate(mat):                        # Boucle sur les lignes du labyrinthe
+        for Cy, c in enumerate(l):                      # Boucle sur les colonnes du labyrinthe
+            turtle.speed(0)                             # Initialisation vitesse de traçage à fond
+            if c != 0:                                  # Vérification NON couloir (pour vitesse)
                 tracer_case((Cx, Cy), COULEURS[int(c)], pas_chateau)  # On trace la case
+            # CE IF EST A SUPPRIMER SI LA COULEUR DU COULOIR CHANGE. EN EFFET ON FAIT L'IMPASSE
+            # SUR LE TRACE DES COULOIRS POUR ALLER PLUS VITE CAR MEME COULEUR QUE LE FOND
 
 
 def eff_zone_indice():
     """
-    Efface la zone d'indice : en fait, dessine un rectangle par dessus
+    Efface la zone d'indice : en fait, dessine un rectangle par dessus de la même couleur que le fond
     :return:
     """
-    turtle.penup()                              # Lève le stylo
-    turtle.color(COULEUR_EXTERIEUR)             # défini la couleur du stylo comme celle du fond
-    turtle.goto(-250, 210)                      # va à un emplacement près du point d'insertion
-    turtle.fillcolor(COULEUR_EXTERIEUR)         # défini la couleur de remplisage comme celle du fond
-    turtle.begin_fill()                         # on rempli
-    turtle.pendown()                            # pinceau en bas
-    for _ in range(2):                          # On dessine un gros rectangle
+    turtle.penup()                                      # Montée du stylo
+    turtle.color(COULEUR_EXTERIEUR)                     # Définition de la couleur du stylo
+    turtle.goto(-250, 210)                              # Positionnement pour début tracage
+    turtle.fillcolor(COULEUR_EXTERIEUR)                 # Définition de la couleur de remplissage
+    turtle.begin_fill()                                 # Début remplissage
+    turtle.pendown()                                    # Descente du stylo
+    for _ in range(2):                                  # Dessin d'un rectangle
         turtle.forward(600)
         turtle.left(90)
         turtle.forward(100)
         turtle.left(90)
-    turtle.end_fill()                           # on le rempli
-    turtle.penup()                              # on lève le stylo
+    turtle.end_fill()                                   # Fin Remplissage
+    turtle.penup()                                      # Montée du stylo
 
 
 def aff_indice(case, typemes=0):
@@ -153,28 +158,28 @@ def aff_indice(case, typemes=0):
     :param typemes: INT suivant le type de message à afficher
     :return:
     """
-    eff_zone_indice()                                       # Effacement de la zone d'indice
-    turtle.penup()                                          # On lève le stylo
-    turtle.goto(POINT_AFFICHAGE_ANNONCES)                   # On va au point d'affichage de l'annonce
-    turtle.color("black")                                   # On défini la couleur
-    message = ""                                            # Initialisation message vide
-    ft = ("Arial", 10, "bold")                              # Initialisation Police de caractères par défaut
-    if case != (-1, -1):                                    # Si c'est une vrai case
-        message = "Vous avez trouvé un objet : " + dic_o[case]  # Affichage de l'objet trouvé
-    else:                                                   # Sinon case = (-1,-1) > autre message
-        if typemes == 0:                                    # Type 0
-            message = "Cette porte est fermée."             # Message porte fermée
-        elif typemes == 1:                                  # Type 1
-            message = "La porte s'ouvre !"                  # Message porte ouverte
-        elif typemes == 2:                                  # Type 2
-            message = "Mauvaise réponse !"                  # Message mauvaise réponse
-        elif typemes == 3:                                  # Type 3
-            message = "Vous n'avez pas tous les indices ! Ils vous les faut tous !" # pas assez d'indices
-        elif typemes == 4:                                  # Type 4
-            message = "FELICITATIONS !"                     # Félicitations
-            ft = ("Arial", 15, "bold")                      # Police plus grosse
+    eff_zone_indice()                                   # Effacement de la zone d'indice
+    turtle.penup()                                      # Montée du stylo
+    turtle.goto(POINT_AFFICHAGE_ANNONCES)               # Positionnement au point d'affichage de l'annonce
+    turtle.color("black")                               # Définition de la couleur
+    message = ""                                        # Initialisation message vide
+    ft = ("Arial", 10, "bold")                          # Initialisation Police de caractères par défaut
+    if case != (-1, -1):                                # Vérification 'vraie' case
+        message = "Vous avez trouvé un objet : " + dic_o[case]  # Message Objet trouvé
+    else:                                               # Sinon case = (-1,-1) > autre message
+        if typemes == 0:                                # Type 0
+            message = "Cette porte est fermée."         # Message porte fermée
+        elif typemes == 1:                              # Type 1
+            message = "La porte s'ouvre !"              # Message porte ouverte
+        elif typemes == 2:                              # Type 2
+            message = "Mauvaise réponse !"              # Message mauvaise réponse
+        elif typemes == 3:                              # Type 3
+            message = "Vous n'avez pas tous les indices ! Ils vous les faut tous !"  # Pas assez d'indices
+        elif typemes == 4:                              # Type 4
+            message = "FELICITATIONS ! - Cliquez pour quitter" # Félicitations
+            ft = ("Arial", 15, "bold")                  # Police plus grosse
 
-    turtle.write(message, font=ft)                          # On écrit le message
+    turtle.write(message, font=ft)                      # Ecriture du message
 
 
 def aff_inventaire(case):
@@ -183,36 +188,36 @@ def aff_inventaire(case):
     :param case: tuple de la case
     :return:
     """
-    l_inv.append(case)                                              # on rajoute la case à la liste de l'inventaire
-    offset = len(l_inv)                                             # len(inventaire) sert d'offset affichage
+    l_inv.append(case)                                  # Ajout case a list inventaire trouvé
+    offset = len(l_inv)                                 # Nombre d'objet trouvé
 
-    turtle.penup()                                                  # on lève le stylo
-    turtle.goto(POINT_AFFICHAGE_INVENTAIRE)                         # on va au point d'affichage
-    turtle.color("black")                                           # on définie la couleur d'affichage
+    turtle.penup()                                      # Montée du stylo
+    turtle.goto(POINT_AFFICHAGE_INVENTAIRE)             # Positionnement au point d'affichage
+    turtle.color("black")                               # Définition couleur d'affichage
 
-    if offset <= 1:                                                 # Si premier objet trouvé
-        turtle.write("Inventaire : ", font=("Arial", 10, "bold"))   # On écrit 'Inventaire' en titre
-    coord = list(POINT_AFFICHAGE_INVENTAIRE)                        # On récupère les coordonnées du point d'aff invent
-    coord[1] = coord[1] - offset * 20                               # On applique un offset pour décaler l'affichage
-    turtle.goto(coord)                                              # On va sur ces coordonnées
-    turtle.write("N°" + str(offset) + " : " + dic_o[case], font=("Arial", 10, "italic"))  # on affiche l'inventaire
+    if offset == 1:                                     # Si premier objet trouvé
+        turtle.write("Inventaire : ", font=("Arial", 10, "bold"))   # Ecriture 'Inventaire' en titre
+    coord = list(POINT_AFFICHAGE_INVENTAIRE)            # Initialisation coordonnée point affichage en list
+    coord[1] = coord[1] - offset * 20                   # Application de l'offset d'affichage en Y pour liste objet
+    turtle.goto(coord)                                  # Positionnement au point d'affichage inventaire
+    turtle.write("N°" + str(offset) + " : " + dic_o[case], font=("Arial", 10, "italic"))  # Affichage dernier objet
 
 
-def question(case):
+def aff_question(case):
     """
     Affiche la question de la case
     :param case: tuple position case
     :return: Boolean True = bonne réponse / False = mauvaise réponse
     """
-    aff_indice((-1, -1), 0)                                                     # On affiche l'indice porte fermée
+    aff_indice((-1, -1), 0)                             # Affichage Indice porte fermée
     reponse = turtle.textinput("Question", dic_q[case][0]) == dic_q[case][1]    # Boolean Rep correct à Quest. case
 
-    if reponse or triche:                                       # si c'est la bonne réponse (OU QU'ON TRICHE !!
-        aff_indice((-1, -1), 1)                                 # On affiche l'indice porte ouverte
-        return True                                             # On renvoi Boolean bonne réponse
-    else:                                                       # Sinon
-        aff_indice((-1, -1), 2)                                 # On affiche l'indice mauvaise réponse
-    return False                                                # Renvoi Boolena mauvaise réponse
+    if reponse or triche:                               # Bonne réponse (OU TRICHE !!)
+        aff_indice((-1, -1), 1)                         # Affichage Indice porte ouverte
+        return True                                     # Renvoi Boolean Bonne réponse
+    else:                                               # Mauvaise réponse
+        aff_indice((-1, -1), 2)                         # Affichage Indice mauvaise réponse
+    return False                                        # Renvoi Boolean mauvaise réponse
 
 
 def verif_nvl_case(case):
@@ -221,26 +226,26 @@ def verif_nvl_case(case):
     :param case: case à vérifier
     :return: Boolean : True = case accessible, False = case inaccessible
     """
-    if mat_chateau[case[0]][case[1]] == 1:                  # si c'est un mur
-        return False                                        # Case inacceissble
+    if mat_chateau[case[0]][case[1]] == 1:              # Vérification mur
+        return False                                    # Case inaccessible
     else:
-        if mat_chateau[case[0]][case[1]] != 5:              # si la case n'a pas déjà été explorée
+        if mat_chateau[case[0]][case[1]] != 5:          # Case non déjà explorée
 
-            if case in dic_o:                               # si la case dispose d'un indice
-                aff_indice(case)                            # On affiche l'indice
-                if len(l_inv) <= len(dic_o):                # Petit verification avant affichage de l'inventaire
-                    aff_inventaire(case)                    # Affichage si tous les indices non trouvés seulement
+            if case in dic_o:                           # Case avec indice
+                aff_indice(case)                        # Affichage indice
+                if len(l_inv) <= len(dic_o):            # Verification avant affichage inventaire (pour mode triche)
+                    aff_inventaire(case)                # Affichage dans l'inventaire
 
-            if case in dic_q:                               # si la case est une porte / question
-                if not question(case):                      # et si on ne répond pas à la question de la case
-                    return False                            # case inaccessible
+            if case in dic_q:                           # Case avec Question / Porte
+                if not aff_question(case):              # Mauvaise réponse
+                    return False                        # case inaccessible
 
-            if mat_chateau[case[0]][case[1]] == 2:          # Cas spécifique : Si la case est la sortie
-                if len(l_inv) < len(dic_o):                 # Et qu'il manque des indices
-                    aff_indice((-1, -1), 3)                 # On indique sortie impossible
-                    return False                            # Case inaccessible
-                aff_indice((-1, -1), 4)                     # On indique qu'on est sortie
-        return True                                         # Case accessible
+            if mat_chateau[case[0]][case[1]] == 2:      # Cas spécifique : Si la case est la sortie
+                if len(l_inv) < len(dic_o):             # Manque d'indice
+                    aff_indice((-1, -1), 3)             # Affichage Sortie Impossible
+                    return False                        # Case inaccessible
+                aff_indice((-1, -1), 4)                 # Affichage Final félicitations
+        return True                                     # Case accessible
 
 
 def def_nvl_case(mouvement):
@@ -251,9 +256,9 @@ def def_nvl_case(mouvement):
     """
     nvl_case = tuple(el1 + el2 for el1, el2 in zip(pos_joueur, mouvement))  # Calcul de la nouvelle case
     if nvl_case[0] < 0 or nvl_case[0] > len(mat_chateau) or nvl_case[1] < 0 or nvl_case[1] > len(
-            mat_chateau[0]):                                                # Si la nouvelle case est HORS limite
-        nvl_case = pos_joueur                                               # du chateau alors on ne change pas de case
-    return nvl_case                                                         # renvoie de la nouvelle case
+            mat_chateau[0]):                            # Si la nouvelle case est HORS limite
+        nvl_case = pos_joueur                           # du chateau alors on ne change pas de case
+    return nvl_case                                     # renvoie de la nouvelle case
 
 
 def se_deplacer(mouvement):
@@ -282,10 +287,12 @@ def se_deplacer(mouvement):
             triche = False                              # Triche désactivée
 
     if mat_chateau[pos_joueur[0]][pos_joueur[1]] == 2:  # Si la nouvelle  position est la sortie
-        turtle.exitonclick()                            # On attend un click pour quitter
+        # turtle.done()                                 # C'est la fin !
+        turtle.exitonclick()                            # attente un click de souris
     else:                                               # Sinon
         reactiv_keyb_fleches()                          # On reactive les flèches
         turtle.listen()                                 # On écoute de nouveau le clavier
+
 
 def deplacer_triche(dico):
     """
@@ -296,7 +303,8 @@ def deplacer_triche(dico):
 
     triche = True                                       # On triche !!!
     mouvement = (0, 0)                                  # Pas de mouvement envisagé
-    if triche_index >= len(dic_o):                      # Si l'index de triche dépasse le nb d'objets
+
+    if triche_index >= len(dico):                       # Si l'index de triche dépasse le nb d'objets
         triche_index = 0                                # On réinitialise l'index de triche par rapport au dictionnaire
     for count, valeurs in enumerate(dico.items()):      # On parcourt le dictionnaire
         if triche_index == count:                       # Lorsqu'on trouve l'index
@@ -367,6 +375,8 @@ def deactiv_keyb_fleches():
     turtle.onkeypress(None, "Right")                    # Désactive la touche Right
     turtle.onkeypress(None, "Up")                       # Désactive la touche Up
     turtle.onkeypress(None, "Down")                     # Désactive la touche Down
+    turtle.onkeypress(None, "o")                        # Désactive la touche o TRICHE objets
+    turtle.onkeypress(None, "q")                        # Désactive la touche q TRICHE question
 
 
 def reactiv_keyb_fleches():
@@ -375,9 +385,11 @@ def reactiv_keyb_fleches():
     :return:
     """
     turtle.onkeypress(deplacer_gauche, "Left")          # Réassocie la touche Left à la fonction deplacer_gauche
-    turtle.onkeypress(deplacer_droite, "Right")         # Réassocie la touche Left à la fonction deplacer_gauche
-    turtle.onkeypress(deplacer_haut, "Up")              # Réassocie la touche Left à la fonction deplacer_gauche
-    turtle.onkeypress(deplacer_bas, "Down")             # Réassocie la touche Left à la fonction deplacer_gauche
+    turtle.onkeypress(deplacer_droite, "Right")         # Réassocie la touche Right à la fonction deplacer_droite
+    turtle.onkeypress(deplacer_haut, "Up")              # Réassocie la touche Up à la fonction deplacer_haut
+    turtle.onkeypress(deplacer_bas, "Down")             # Réassocie la touche Down à la fonction deplacer_bas
+    turtle.onkeypress(deplacer_triche_objets, "o")      # Réassocie la touche o à la fonction deplacer_triche_objets
+    turtle.onkeypress(deplacer_triche_questions, "q")   # Réassocie la touche q à la deplacer_triche_questions
 
 
 def attente_deplacement():
@@ -426,7 +438,7 @@ def init():
     pas_chateau = calcul_pas(mat_chateau)               # Pas des positions du chateau
 
     turtle.title("Chateau du Python des Neiges - © AshOfPhoenix")  # Change le titre
-    turtle.setup(1280, 1024)                            # limitation de la fenetre à 1280x1024
+    turtle.hideturtle()                                 # Curseur Turtle Caché
     turtle.bgcolor(COULEUR_EXTERIEUR)                   # Initialisation couleur de fond Turtle
     aff_plan(mat_chateau)                               # Affichage du plan
     aff_joueur(pos_joueur)                              # Affichage du joueur
