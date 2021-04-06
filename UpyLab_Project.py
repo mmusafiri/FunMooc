@@ -1,3 +1,26 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+"""
+MOOC PROJECT - CHATEAU DU PYTHON DES NEIGES
+
+Parcours du labyrinthe à la recherche d'indice.
+Répondre aux questions pour traverser les portes.
+Cliquer sur l'écran  en fin pour sortir
+
+Chaque Fonction est documentée
+"""
+
+__author__ = "Nicolas RISSOAN"
+__copyright__ = "© 2020/04"
+__credits__ = ["FUN MOOC TEAM"]
+__license__ = "GPL"
+__version__ = "1.0.0"
+__maintainer__ = "Ashofphoenix"
+__email__ = "ashofphoenix@sunnox.fr"
+__status__ = "Prototype"
+
+
 # DECLARATION IMPORTS
 
 from CONFIGS import *
@@ -138,7 +161,7 @@ def eff_zone_indice():
     """
     turtle.penup()                                      # Montée du stylo
     turtle.color(COULEUR_EXTERIEUR)                     # Définition de la couleur du stylo
-    turtle.goto(-250, 210)                              # Positionnement pour début tracage
+    turtle.goto(-250, 230)                              # Positionnement pour début tracage
     turtle.fillcolor(COULEUR_EXTERIEUR)                 # Définition de la couleur de remplissage
     turtle.begin_fill()                                 # Début remplissage
     turtle.pendown()                                    # Descente du stylo
@@ -195,7 +218,7 @@ def aff_inventaire(case):
     turtle.goto(POINT_AFFICHAGE_INVENTAIRE)             # Positionnement au point d'affichage
     turtle.color("black")                               # Définition couleur d'affichage
 
-    if offset == 1:                                     # Si premier objet trouvé
+    if offset <= 1:                                     # Si premier objet trouvé
         turtle.write("Inventaire : ", font=("Arial", 10, "bold"))   # Ecriture 'Inventaire' en titre
     coord = list(POINT_AFFICHAGE_INVENTAIRE)            # Initialisation coordonnée point affichage en list
     coord[1] = coord[1] - offset * 20                   # Application de l'offset d'affichage en Y pour liste objet
