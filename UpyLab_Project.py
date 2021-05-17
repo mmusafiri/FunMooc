@@ -12,10 +12,10 @@ Chaque Fonction est documentée
 """
 
 __author__ = "Nicolas RISSOAN"
-__copyright__ = "© 2020/04"
+__copyright__ = "© 2021/04"
 __credits__ = ["FUN MOOC TEAM"]
 __license__ = "GPL"
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 __maintainer__ = "Ashofphoenix"
 __email__ = "ashofphoenix@sunnox.fr"
 __status__ = "Prototype"
@@ -59,15 +59,13 @@ def lire_matrice(filename, sep=' '):
 
 def calcul_pas(matrix):
     """
-    Calcul du pas de la matrice. Ce pas ne varie plus est est passé en variable globale pour certains cas
+    Calcul du pas de la matrice. Ce pas ne varie plus et est passé en variable globale pour certains cas
     :param : matrice du chateau
     :return: INT pas_chateau des zones du chateau
     """
-    pas_h = int(abs((ZONE_PLAN_MAXI[0] - ZONE_PLAN_MINI[0]) / len(matrix[0])))  # Calcul du pas en X
-    pas_v = int(abs((ZONE_PLAN_MAXI[1] - ZONE_PLAN_MINI[1]) / len(matrix)))     # Calcul du pas en Y
-    if pas_h <= pas_v:
-        return pas_h                                    # Renvoi du pas le plus petit
-    return pas_v                                        # Permettant de tenir dans la zone
+    pas_h = abs((ZONE_PLAN_MAXI[0] - ZONE_PLAN_MINI[0]) / len(matrix[0]))  # Calcul du pas en X
+    pas_v = abs((ZONE_PLAN_MAXI[1] - ZONE_PLAN_MINI[1]) / len(matrix))     # Calcul du pas en Y
+    return int(min(pas_h, pas_v))                                          # Renvoi du pas le plus petit
 
 
 def coordonnees(case, step):
@@ -112,9 +110,9 @@ def tracer_case(case, couleur, step):
     turtle.penup()                                      # Montée de stylo
     turtle.goto(coordonnees(case, step))                # Positionnement aux coordonnées Turtle de la case
     turtle.pendown()                                    # Descente du stylo
-    turtle.color(couleur)                               # Définition de la couleur de remplissage
+    turtle.color(COULEUR_EXTERIEUR, couleur)            # Définition de la couleur de contour et de remplissage
     turtle.begin_fill()                                 # Début remplissage
-    tracer_carre(pas_chateau - 2)                       # Tracage du carré
+    tracer_carre(pas_chateau)                           # Tracage du carré
     turtle.end_fill()                                   # Fin du remplissage
     turtle.penup()                                      # Montée du stylo
 
@@ -127,31 +125,29 @@ def aff_joueur(case, efface=False):
     :return:
     """
     turtle.penup()                                      # Montée du stylo
-    centre_joueur = tuple(ti + ((pas_chateau - 2) / 2) for ti in coordonnees(case, pas_chateau))  # Calcul coord
+    centre_joueur = tuple(ti + (pas_chateau / 2) for ti in coordonnees(case, pas_chateau))  # Calcul coord
     turtle.goto(centre_joueur)                          # Positionnement aux coordonnées
     turtle.pendown()                                    # Descente du stylo
     if efface:                                          # Vérification si effacement
         coul = COULEURS[mat_chateau[case[0]][case[1]]]  # Récupération de la couleur de la case
     else:                                               # Sinon
         coul = COULEUR_PERSONNAGE                       # Initialisation couleur personnage
-    turtle.dot(int(RATIO_PERSONNAGE * (pas_chateau - 1)), coul)  # On fait le rond du personnage avec le ratio
+    turtle.dot(int(RATIO_PERSONNAGE * pas_chateau), coul)  # On fait le rond du personnage avec le ratio
     turtle.penup()                                      # Montée du Stylo
 
 
 def aff_plan(mat):
     """
     Affichage du plan du labyrinthe
-    Note : si les couloirs ont une couleur specfique, il faudra supprimer la condition if, mise pour aller plus vite
+
     :param mat: Liste "matricielle" par ligne du Labyrinthe
     :return:
     """
+
     for Cx, l in enumerate(mat):                        # Boucle sur les lignes du labyrinthe
         for Cy, c in enumerate(l):                      # Boucle sur les colonnes du labyrinthe
-            turtle.speed(0)                             # Initialisation vitesse de traçage à fond
-            if c != 0:                                  # Vérification NON couloir (pour vitesse)
-                tracer_case((Cx, Cy), COULEURS[int(c)], pas_chateau)  # On trace la case
-            # CE IF EST A SUPPRIMER SI LA COULEUR DU COULOIR CHANGE. EN EFFET ON FAIT L'IMPASSE
-            # SUR LE TRACE DES COULOIRS POUR ALLER PLUS VITE CAR MEME COULEUR QUE LE FOND
+            tracer_case((Cx, Cy), COULEURS[c], pas_chateau)  # On trace la case
+
 
 
 def eff_zone_indice():
@@ -306,16 +302,14 @@ def se_deplacer(mouvement):
             aff_joueur(nvl_case)                        # Positionnement du joueur sur la nouvelle case
             mat_chateau[pos_joueur[0]][pos_joueur[1]] = 5  # on défini l'ancienne case comme "visitée" dans la matrice
             tracer_case(pos_joueur, COULEUR_VUE, pas_chateau)  # on retrace la case precédente la couleur "VUE"
-            pos_joueur = nvl_case                       # On redéfini la position joeur comme etant cette nouvelle case
+            pos_joueur = nvl_case                       # On redéfini la position joueur comme etant cette nouvelle case
             triche = False                              # Triche désactivée
 
     if mat_chateau[pos_joueur[0]][pos_joueur[1]] == 2:  # Si la nouvelle  position est la sortie
         # turtle.done()                                 # C'est la fin !
         turtle.exitonclick()                            # attente un click de souris
-    else:                                               # Sinon
-        reactiv_keyb_fleches()                          # On reactive les flèches
-        turtle.listen()                                 # On écoute de nouveau le clavier
 
+    reactiv_keyb_fleches()                              # Reactivation du clavier
 
 def deplacer_triche(dico):
     """
@@ -407,6 +401,7 @@ def reactiv_keyb_fleches():
     Réactivation des actions possibles  lors d'appuis touche sur les touches de déplacement (flèches)
     :return:
     """
+    turtle.listen()
     turtle.onkeypress(deplacer_gauche, "Left")          # Réassocie la touche Left à la fonction deplacer_gauche
     turtle.onkeypress(deplacer_droite, "Right")         # Réassocie la touche Right à la fonction deplacer_droite
     turtle.onkeypress(deplacer_haut, "Up")              # Réassocie la touche Up à la fonction deplacer_haut
@@ -438,12 +433,10 @@ def creer_dict(fichier):
     :return: dict ((coord), "valeur")
     """
     dico = {}                                           # Init d'un dico vide
-    with open(fichier, encoding="utf-8") as fl:         # Ouverture du fichier
-        lig = fl.readline()                             # Lecture du fichier
-        while lig != "":                                # Tant qu'il reste des lignes
-            val_un, val_deux = eval(lig)                # On récupère les données dans deux variables
-            dico.setdefault(val_un, val_deux)           # On les rajoute au dictionnaire
-            lig = fl.readline()                         # On relie une ligne
+    with open(fichier, 'r', encoding="utf-8") as fl:    # Ouverture du fichier
+        for ligne in fl:                                # boucle sur chaque ligne
+            cle, valeur = eval(ligne)                   # On récupère les données dans deux variables
+            dico.setdefault(cle, valeur)                # On les rajoute au dictionnaire
     return dico                                         # Renvoi dictionnaire crée
 
 
@@ -461,7 +454,7 @@ def init():
     pas_chateau = calcul_pas(mat_chateau)               # Pas des positions du chateau
 
     turtle.title("Chateau du Python des Neiges - © AshOfPhoenix")  # Change le titre
-    turtle.hideturtle()                                 # Curseur Turtle Caché
+    turtle.tracer(0, 0)                                 # désactive les delais d'affichage et animation
     turtle.bgcolor(COULEUR_EXTERIEUR)                   # Initialisation couleur de fond Turtle
     aff_plan(mat_chateau)                               # Affichage du plan
     aff_joueur(pos_joueur)                              # Affichage du joueur

@@ -8,4 +8,4 @@
 (37, 19), "la botte secrète de Karadoc"
 (35, 25), "des dés"
 (1, 19), "un récipient d'eau"
-(39, 24),"LE GRAAL !! ah non mince, c'est un vase"
+(39, 24),"LE GRAAL !! ah non mince, c'est une vase"
