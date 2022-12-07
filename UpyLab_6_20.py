@@ -67,24 +67,10 @@ def comp(f_passfail,f_count):
                         break
                 sort_dic_cle.pop(exc)
 
-            # while len(sort_dic_val) > 0:
-            #     for exv in sort_dic_val:
-            #         for exc in sort_dic_cle:
-            #             if sort_dic_val[exv] == sort_dic_cle[exc]:
-            #                 break
-            #         if sort_dic_val[exv] == sort_dic_cle[exc]:
-            #             break
-            #     liste_ex.append(exc)
-            #     sort_dic_cle.pop(exc)
-            #     sort_dic_val.pop(exv)
-
-            # for name in liste_ex:
-            #     print(name)
-
+           
 
 f_passfail = "result-pass-fail-0.csv"
 f_count = "result-count-0.csv"
-# f_passfail = input()
-# f_count = input()
+
 
 comp(f_passfail, f_count)
